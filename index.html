@@ -252,6 +252,7 @@
                         <span id="modalDetailDate" class="text-xs text-slate-500 font-medium"></span>
                     </div>
                     <h2 id="modalDetailTitle" class="text-base font-bold text-slate-950 leading-snug"></h2>
+                    <p id="modalDetailDescription" class="hidden text-xs text-slate-600 bg-slate-100/80 border border-slate-200 p-2.5 rounded-lg mt-2 font-normal leading-relaxed"></p>
                 </div>
                 <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-700 transition p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -302,6 +303,11 @@
                 <div>
                     <label class="block font-medium text-slate-700 mb-1">대화 제목 *</label>
                     <input type="text" id="formTitle" required placeholder="제목을 입력하세요..." class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">설명 (선택 사항)</label>
+                    <textarea id="formDescription" rows="2" placeholder="제목 아래에 표시할 요약 설명 작성 (공란 시 첫번째 질문이 표시됨)..." class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400"></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -393,6 +399,7 @@
                 const turnsText = (post.turns || []).map(t => (t.question || '') + ' ' + (t.answer || '')).join(' ');
                 const matchSearch = !searchKeyword || 
                     post.title.toLowerCase().includes(searchKeyword) ||
+                    (post.description && post.description.toLowerCase().includes(searchKeyword)) ||
                     turnsText.toLowerCase().includes(searchKeyword) ||
                     (post.tags && post.tags.some(t => t.toLowerCase().includes(searchKeyword)));
                 
@@ -425,6 +432,9 @@
 
             const turns = post.turns || [{ question: post.question || '', answer: post.answer || '' }];
             const firstQuestion = turns[0]?.question || '질문 내용 없음';
+            
+            // 설명란 기재 여부에 따라 텍스트 결정
+            const previewText = (post.description && post.description.trim()) ? post.description.trim() : firstQuestion;
 
             const tagsHTML = (post.tags || []).map(tag => 
                 `<span onclick="event.stopPropagation(); setFilter('${tag}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2 py-0.5 rounded text-[11px] border border-slate-200 transition">#${tag}</span>`
@@ -443,7 +453,7 @@
                         </div>
                     </div>
                     <h2 class="text-[15px] font-bold text-slate-950 leading-snug mb-1">${escapeHTML(post.title)}</h2>
-                    <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">${escapeHTML(firstQuestion)}</p>
+                    <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">${escapeHTML(previewText)}</p>
                 </div>
 
                 ${(post.tags && post.tags.length > 0) ? `<div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">${tagsHTML}</div>` : ''}
@@ -459,6 +469,14 @@
             document.getElementById('modalDetailCategory').innerText = post.category || '기타';
             document.getElementById('modalDetailDate').innerText = post.date;
             document.getElementById('modalDetailTitle').innerText = post.title;
+
+            const descElem = document.getElementById('modalDetailDescription');
+            if (post.description && post.description.trim()) {
+                descElem.innerText = post.description.trim();
+                descElem.classList.remove('hidden');
+            } else {
+                descElem.classList.add('hidden');
+            }
 
             const hideQuestionClass = globalAnswerOnly ? 'hidden' : '';
             const turns = post.turns || [{ question: post.question || '', answer: post.answer || '' }];
@@ -600,7 +618,7 @@
             }
         }
 
-        // 표 내부 셀 파싱 전용 헬퍼 함수 (개행 문자로 인해 마크다운 표가 깨지거나 문서 최상단으로 분리되는 현원 방지)
+        // 표 내부 셀 파싱 전용 헬퍼 함수 (개행 문자로 인해 마크다운 표가 깨지거나 문서 최상단으로 분리되는 현상 방지)
         function getTableCellMarkdown(node) {
             if (node.nodeType === Node.TEXT_NODE) {
                 return node.nodeValue;
@@ -677,6 +695,7 @@
             const newPost = {
                 id: 'doc-' + Date.now(),
                 title: title || "구글 문서 대화 기록",
+                description: "",
                 date: new Date().toISOString().split('T')[0],
                 category: defaultCat,
                 tags: ["Docs", "자동백업"],
@@ -833,6 +852,7 @@
             if (!isEdit) {
                 document.getElementById('chatForm').reset();
                 document.getElementById('editPostId').value = '';
+                document.getElementById('formDescription').value = '';
                 document.getElementById('formModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-slate-600"></i> 새 대화 직접 작성`;
                 document.getElementById('formDate').valueAsDate = new Date();
             }
@@ -846,6 +866,7 @@
             e.preventDefault();
             const editId = document.getElementById('editPostId').value;
             const title = document.getElementById('formTitle').value.trim();
+            const description = document.getElementById('formDescription').value.trim();
             const date = document.getElementById('formDate').value;
             const category = document.getElementById('formCategorySelect').value;
             const tags = document.getElementById('formTags').value.split(',').map(t => t.trim()).filter(Boolean);
@@ -855,12 +876,20 @@
             if (editId) {
                 const index = posts.findIndex(p => p.id === editId);
                 if (index !== -1) {
-                    posts[index] = { ...posts[index], title, date, category, tags, turns: [{ question, answer }] };
+                    posts[index] = { 
+                        ...posts[index], 
+                        title, 
+                        description,
+                        date, 
+                        category, 
+                        tags, 
+                        turns: posts[index].turns && posts[index].turns.length > 1 ? posts[index].turns : [{ question, answer }] 
+                    };
                     showToast('대화 기록이 수정되었습니다.');
                 }
             } else {
                 posts.unshift({
-                    id: 'post-' + Date.now(), title, date, category, tags,
+                    id: 'post-' + Date.now(), title, description, date, category, tags,
                     turns: [{ question, answer }]
                 });
                 showToast('새 대화가 추가되었습니다.');
@@ -878,6 +907,7 @@
             openFormModal(true);
             document.getElementById('editPostId').value = post.id;
             document.getElementById('formTitle').value = post.title;
+            document.getElementById('formDescription').value = post.description || '';
             document.getElementById('formDate').value = post.date;
             document.getElementById('formCategorySelect').value = post.category || categories[0];
             document.getElementById('formTags').value = post.tags ? post.tags.join(', ') : '';
