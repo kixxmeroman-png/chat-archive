@@ -249,7 +249,6 @@
                 <div class="w-full">
                     <div class="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span id="modalDetailCategory" class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-[11px] font-bold"></span>
-                        <span id="modalDetailDate" class="text-xs text-slate-500 font-medium"></span>
                     </div>
                     <h2 id="modalDetailTitle" class="text-base font-bold text-slate-950 leading-snug"></h2>
                     <p id="modalDetailDescription" class="hidden text-xs text-slate-600 mt-2 font-normal leading-relaxed w-full break-words"></p>
@@ -258,35 +257,7 @@
             </div>
 
             <div id="modalDetailBody" class="p-6 overflow-y-auto space-y-6 flex-grow text-[13.5px] select-text"></div>
-
-            <div class="px-6 py-3 border-t border-slate-200 bg-slate-50/50 flex items-center justify-between gap-4 shrink-0 text-xs">
-                <div id="modalDetailTags" class="flex flex-wrap gap-1.5"></div>
-                <button onclick="closeViewModal()" class="px-4 py-1.5 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition">닫기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. 카테고리 관리 모달 -->
-    <div id="categoryModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white border border-slate-200 rounded-xl w-full max-w-md overflow-hidden shadow-2xl p-5">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-folder-tree text-slate-600"></i> 카테고리 관리
-                </h3>
-                <button onclick="closeCategoryManageModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-base"></i></button>
-            </div>
-
-            <form onsubmit="handleAddCategory(event)" class="flex gap-2 mb-4">
-                <input type="text" id="newCategoryInput" required placeholder="새 카테고리 이름..." class="flex-grow bg-slate-50 text-slate-800 text-xs rounded-lg px-3 py-2 border border-slate-200 focus:outline-none focus:border-slate-400">
-                <button type="submit" class="px-3 py-2 bg-slate-900 text-white text-xs rounded-lg font-semibold hover:bg-slate-800 shrink-0">추가</button>
-            </form>
-
-            <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs">
-                <ul id="modalCategoryList"></ul>
-            </div>
-        </div>
-    </div>
-
+<!-- ... existing code -->
     <!-- 3. 대화 작성/수정 모달 -->
     <div id="formModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white border border-slate-200 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl transform transition-all my-8">
@@ -310,47 +281,16 @@
                     <textarea id="formDescription" rows="2" placeholder="제목 아래에 표시할 요약 설명 작성 (공란 시 첫번째 질문이 표시됨)..." class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400"></textarea>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">날짜</label>
-                        <input type="date" id="formDate" required class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">카테고리</label>
-                        <select id="formCategorySelect" class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400"></select>
-                    </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">카테고리</label>
+                    <select id="formCategorySelect" class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400"></select>
                 </div>
 
                 <div>
                     <label class="block font-medium text-slate-700 mb-1">태그 (쉼표로 구분)</label>
                     <input type="text" id="formTags" placeholder="예: 백업, 팁" class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400">
                 </div>
-
-                <div id="dialoguesContainer" class="space-y-4">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">질문 (Prompt)</label>
-                        <textarea id="formQuestion" rows="3" placeholder="질문 내용..." class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400"></textarea>
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">답변 (Gemini Response) *</label>
-                        <textarea id="formAnswer" rows="6" required placeholder="답변 내용을 작성..." class="w-full bg-slate-50 text-slate-800 rounded-lg p-2.5 border border-slate-200 focus:outline-none focus:border-slate-400 font-mono"></textarea>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
-                    <button type="button" onclick="closeFormModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 bg-slate-50 border border-slate-200 rounded-lg transition">취소</button>
-                    <button type="submit" class="px-5 py-2 text-white bg-slate-900 hover:bg-slate-800 rounded-lg font-semibold transition shadow-sm">저장하기</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs flex items-center gap-2 border border-slate-700">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-slate-300"></i>
-        <span id="toastMessage">처리되었습니다.</span>
-    </div>
-
+<!-- ... existing code -->
     <!-- Application Core Script -->
     <script>
         let posts = [];
@@ -369,7 +309,6 @@
 
             loadData();
             renderPosts();
-            document.getElementById('formDate').valueAsDate = new Date();
         });
 
         function loadData() {
@@ -445,7 +384,6 @@
                     <div class="flex items-center justify-between gap-2 mb-1.5">
                         <div class="flex items-center gap-2 flex-wrap">
                             ${post.category ? `<span onclick="event.stopPropagation(); setFilter('${post.category}')" class="bg-slate-100 text-slate-800 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-bold">${post.category}</span>` : ''}
-                            <span class="text-[11px] text-slate-500 font-medium"><i class="fa-regular fa-calendar text-[10px] mr-1"></i>${post.date}</span>
                         </div>
                         <div class="flex items-center gap-1">
                             <button onclick="event.stopPropagation(); editPost('${post.id}')" title="수정" class="p-1 text-slate-400 hover:text-slate-800 rounded transition"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
@@ -467,7 +405,6 @@
             if (!post) return;
 
             document.getElementById('modalDetailCategory').innerText = post.category || '기타';
-            document.getElementById('modalDetailDate').innerText = post.date;
             document.getElementById('modalDetailTitle').innerText = post.title;
 
             const descElem = document.getElementById('modalDetailDescription');
@@ -696,7 +633,6 @@
                 id: 'doc-' + Date.now(),
                 title: title || "구글 문서 대화 기록",
                 description: "",
-                date: new Date().toISOString().split('T')[0],
                 category: defaultCat,
                 tags: ["Docs", "자동백업"],
                 turns: turns
@@ -854,7 +790,6 @@
                 document.getElementById('editPostId').value = '';
                 document.getElementById('formDescription').value = '';
                 document.getElementById('formModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-slate-600"></i> 새 대화 직접 작성`;
-                document.getElementById('formDate').valueAsDate = new Date();
             }
         }
 
@@ -867,7 +802,6 @@
             const editId = document.getElementById('editPostId').value;
             const title = document.getElementById('formTitle').value.trim();
             const description = document.getElementById('formDescription').value.trim();
-            const date = document.getElementById('formDate').value;
             const category = document.getElementById('formCategorySelect').value;
             const tags = document.getElementById('formTags').value.split(',').map(t => t.trim()).filter(Boolean);
             const question = document.getElementById('formQuestion') ? document.getElementById('formQuestion').value.trim() : '';
@@ -880,7 +814,6 @@
                         ...posts[index], 
                         title, 
                         description,
-                        date, 
                         category, 
                         tags, 
                         turns: posts[index].turns && posts[index].turns.length > 1 ? posts[index].turns : [{ question, answer }] 
@@ -889,7 +822,7 @@
                 }
             } else {
                 posts.unshift({
-                    id: 'post-' + Date.now(), title, description, date, category, tags,
+                    id: 'post-' + Date.now(), title, description, category, tags,
                     turns: [{ question, answer }]
                 });
                 showToast('새 대화가 추가되었습니다.');
@@ -908,7 +841,6 @@
             document.getElementById('editPostId').value = post.id;
             document.getElementById('formTitle').value = post.title;
             document.getElementById('formDescription').value = post.description || '';
-            document.getElementById('formDate').value = post.date;
             document.getElementById('formCategorySelect').value = post.category || categories[0];
             document.getElementById('formTags').value = post.tags ? post.tags.join(', ') : '';
             
@@ -927,96 +859,4 @@
                 showToast('기록이 삭제되었습니다.');
             }
         }
-
-        function setFilter(filter) {
-            activeTagFilter = filter;
-            renderPosts();
-        }
-
-        function resetFilters() {
-            activeTagFilter = null;
-            document.getElementById('searchInput').value = '';
-            document.getElementById('answerOnlyToggle').checked = false;
-            globalAnswerOnly = false;
-            renderPosts();
-        }
-
-        function toggleAnswerOnlyGlobal() {
-            globalAnswerOnly = document.getElementById('answerOnlyToggle').checked;
-            renderPosts();
-        }
-
-        function exportJSON() {
-            const exportObj = { posts, categories };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `gemini_archive_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            showToast('백업 파일 내보내기가 완료되었습니다.');
-        }
-
-        function importJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported)) {
-                        posts = imported;
-                    } else if (imported.posts) {
-                        posts = imported.posts;
-                        if (imported.categories) categories = imported.categories;
-                    }
-                    saveData();
-                    renderPosts();
-                    showToast('데이터를 성공적으로 불러왔습니다.');
-                } catch(err) {
-                    alert('올바른 JSON 백업 파일이 아닙니다.');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function highlightCodeBlocks() {
-            document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
-        }
-
-        function copyToClipboard(text) {
-            const tempInput = document.createElement('textarea');
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            showToast('답변 텍스트가 복사되었습니다.');
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => { toast.classList.add('hidden'); }, 3000);
-        }
-
-        function escapeHTML(str) {
-            return (str || '')
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function escapeForAttribute(str) {
-            return (str || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\${/g, '\\${');
-        }
-    </script>
-</body>
-</html>
+<!-- ... existing code -->
