@@ -246,13 +246,13 @@
     <div id="viewModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white border border-slate-200 rounded-xl w-full max-w-3xl overflow-hidden shadow-2xl transform transition-all my-8 max-h-[85vh] flex flex-col select-text">
             <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-start justify-between gap-4 shrink-0">
-                <div>
+                <div class="w-full">
                     <div class="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span id="modalDetailCategory" class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-[11px] font-bold"></span>
                         <span id="modalDetailDate" class="text-xs text-slate-500 font-medium"></span>
                     </div>
                     <h2 id="modalDetailTitle" class="text-base font-bold text-slate-950 leading-snug"></h2>
-                    <p id="modalDetailDescription" class="hidden text-xs text-slate-600 bg-slate-100/80 border border-slate-200 p-2.5 rounded-lg mt-2 font-normal leading-relaxed"></p>
+                    <p id="modalDetailDescription" class="hidden text-xs text-slate-600 mt-2 font-normal leading-relaxed w-full break-words"></p>
                 </div>
                 <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-700 transition p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
